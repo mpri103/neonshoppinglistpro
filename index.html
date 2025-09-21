@@ -1,0 +1,650 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A modern, neon-themed shopping list app with fixed categories, INR as default currency, enhanced mobile animations, and haptic feedback.">
+    <title>Neon Shopping List Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            width: 100%; min-height: 100vh; overflow-x: hidden;
+            font-family: 'Exo 2', sans-serif; background: linear-gradient(145deg, #121212, #000);
+            color: #fff; display: flex; justify-content: center; align-items: center; flex-direction: column;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.light-mode { background: linear-gradient(145deg, #f0f0f0, #fff); color: #000; }
+        @keyframes neonPulse {
+            0%, 100% { box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); }
+            50% { box-shadow: 0 0 8px rgba(0, 183, 183, 0.5); }
+        }
+        @keyframes neonPulseGreen {
+            0%, 100% { box-shadow: 0 0 4px #00cc00; }
+            50% { box-shadow: 0 0 8px #00cc00; }
+        }
+        @keyframes neonPulseRed {
+            0%, 100% { box-shadow: 0 0 4px #cc0000; }
+            50% { box-shadow: 0 0 8px #cc0000; }
+        }
+        @keyframes neonPulseYellow {
+            0%, 100% { text-shadow: 0 0 4px #cccc00; }
+            50% { text-shadow: 0 0 8px #cccc00; }
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeSlideLeft {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(-10px); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scalePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes checkboxPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .container {
+            background: linear-gradient(145deg, #1e1e1e, #2a2a2a); border-radius: 10px;
+            padding: 16px; width: 100%; max-width: 700px; margin: 16px auto;
+            box-shadow: 0 0 6px rgba(0, 183, 183, 0.3); animation: neonPulse 4s ease-in-out infinite;
+            transition: transform 0.3s ease, background 0.3s, box-shadow 0.3s;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        body.light-mode .container {
+            background: linear-gradient(145deg, #fff, #e0e0e0); box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+        }
+        .container:hover { transform: scale(1.01); box-shadow: 0 0 10px rgba(0, 183, 183, 0.5); }
+        body.light-mode .container:hover { box-shadow: 0 0 10px rgba(0, 0, 0, 0.25); }
+        h1 {
+            text-align: center; font-weight: 700; color: #00b7b7; text-shadow: 0 0 4px #00b7b7;
+            margin-bottom: 16px; font-size: 2em; letter-spacing: 1px; animation: neonPulse 4s ease-in-out infinite;
+        }
+        body.light-mode h1 { color: #006666; text-shadow: none; }
+        .add-item, .extra-features {
+            display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; justify-content: center;
+            width: 100%; align-items: center;
+        }
+        #new-item, #new-qty, #new-price, #new-due, #new-category, #search-input, #currency {
+            padding: 8px; border: 1px solid #00b7b7; border-radius: 6px; background: #2a2a2a; color: #fff;
+            font-size: 0.9em; font-family: 'Exo 2', sans-serif; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3);
+            transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s, border 0.3s;
+            flex: 1; min-width: 100px; will-change: transform, box-shadow;
+        }
+        body.light-mode #new-item, body.light-mode #new-qty, body.light-mode #new-price, body.light-mode #new-due,
+        body.light-mode #new-category, body.light-mode #search-input, body.light-mode #currency {
+            background: #fff; border: 1px solid #006666; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); color: #000;
+        }
+        #new-item { flex: 2; min-width: 150px; }
+        #new-qty, #new-price, #currency, #new-category { min-width: 80px; }
+        #new-due { min-width: 120px; }
+        #search-input { width: 100%; margin: 8px 0; }
+        #new-item::placeholder, #new-qty::placeholder, #new-price::placeholder, #new-due::placeholder,
+        #new-category::placeholder, #search-input::placeholder, #currency::placeholder {
+            color: #ccc;
+        }
+        body.light-mode #new-item::placeholder, body.light-mode #new-qty::placeholder, body.light-mode #new-price::placeholder,
+        body.light-mode #new-due::placeholder, body.light-mode #new-category::placeholder, body.light-mode #search-input::placeholder,
+        body.light-mode #currency::placeholder { color: #333; }
+        #new-item:focus, #new-qty:focus, #new-price:focus, #new-due:focus, #new-category:focus, #search-input:focus, #currency:focus {
+            outline: none; box-shadow: 0 0 8px rgba(0, 183, 183, 0.5); animation: neonPulse 4s ease-in-out infinite;
+            transform: scale(1.02);
+        }
+        body.light-mode #new-item:focus, body.light-mode #new-qty:focus, body.light-mode #new-price:focus,
+        body.light-mode #new-due:focus, body.light-mode #new-category:focus, body.light-mode #search-input:focus,
+        body.light-mode #currency:focus { box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); }
+        button {
+            padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em;
+            font-family: 'Exo 2', sans-serif; transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s, color 0.3s;
+            min-width: 80px; text-align: center; line-height: 1.5; will-change: transform, box-shadow;
+        }
+        #add-btn { background: #00cc00; color: #000; animation: neonPulseGreen 4s ease-in-out infinite; }
+        body.light-mode #add-btn { background: #009900; color: #fff; }
+        #clear-btn { background: #cc0000; color: #fff; animation: neonPulseRed 4s ease-in-out infinite; }
+        body.light-mode #clear-btn { background: #990000; color: #fff; }
+        #export-btn, #sort-btn, #notify-btn, #mode-toggle { background: #00b7b7; color: #000; }
+        body.light-mode #export-btn, body.light-mode #sort-btn, body.light-mode #notify-btn, body.light-mode #mode-toggle {
+            background: #006666; color: #fff;
+        }
+        button:active {
+            transform: scale(1.05); box-shadow: 0 0 8px rgba(0, 183, 183, 0.5);
+            animation: scalePulse 0.3s ease-in-out;
+        }
+        body.light-mode button:active { box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); }
+        .tab-content { width: 100%; margin-top: 16px; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: fadeIn 0.3s ease-in; }
+        .list-group { list-style: none; padding: 0; width: 100%; }
+        .list-group-item {
+            display: flex; align-items: center; background: #2a2a2a; border-radius: 6px; padding: 10px;
+            margin-bottom: 8px; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); transition: all 0.3s;
+        }
+        body.light-mode .list-group-item { background: #fff; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); }
+        .list-group-item:hover { box-shadow: 0 0 8px rgba(0, 183, 183, 0.5); transform: translateY(-2px); }
+        body.light-mode .list-group-item:hover { box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); }
+        .list-group-item.added { animation: fadeSlideUp 0.3s ease-in; }
+        .list-group-item.removing { animation: fadeSlideLeft 0.3s ease-in forwards; }
+        .list-group-item.completed { text-decoration: line-through; color: #888; background: #1a1a1a; box-shadow: 0 0 4px rgba(0, 204, 0, 0.3); }
+        body.light-mode .list-group-item.completed { background: #f0f0f0; }
+        .list-group-item input[type="checkbox"] {
+            margin-right: 8px; accent-color: #00b7b7; width: 18px; height: 18px; min-width: 18px;
+            transition: transform 0.2s ease;
+        }
+        .list-group-item input[type="checkbox"]:checked { animation: checkboxPulse 0.3s ease-in; }
+        body.light-mode .list-group-item input[type="checkbox"] { accent-color: #006666; }
+        .item-details { flex: 1; display: flex; flex-direction: column; }
+        .item-text { font-size: 0.95em; font-weight: 400; }
+        .item-meta { font-size: 0.8em; color: #00b7b7; text-shadow: 0 0 2px rgba(0, 183, 183, 0.3); }
+        body.light-mode .item-meta { color: #006666; text-shadow: none; }
+        .edit-input, .edit-quantity, .edit-price, .edit-due, .edit-category {
+            padding: 8px; border: 1px solid #00b7b7; border-radius: 6px; background: #1e1e1e; color: #fff;
+            box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); margin-bottom: 4px; font-family: 'Exo 2', sans-serif;
+            transition: all 0.3s ease, background 0.3s, border 0.3s; transform-origin: top;
+        }
+        .edit-input.active, .edit-quantity.active, .edit-price.active, .edit-due.active, .edit-category.active {
+            animation: fadeSlideUp 0.3s ease-in;
+        }
+        body.light-mode .edit-input, body.light-mode .edit-quantity, body.light-mode .edit-price,
+        body.light-mode #new-due, body.light-mode .edit-category {
+            background: #fff; border: 1px solid #006666; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); color: #000;
+        }
+        .edit-input { width: 100%; font-size: 0.9em; }
+        .edit-quantity, .edit-price { width: 80px; font-size: 0.9em; }
+        .edit-due, .edit-category { width: 100px; font-size: 0.9em; }
+        .edit-input:focus, .edit-quantity:focus, .edit-price:focus, .edit-due:focus, .edit-category:focus {
+            animation: neonPulse 4s ease-in-out infinite;
+        }
+        .save-btn.active { animation: scalePulse 0.5s ease-in-out infinite; }
+        .actions { display: flex; gap: 8px; align-items: center; }
+        .edit-btn, .save-btn, .delete-btn { background: none; border: none; cursor: pointer; font-size: 1.1em; transition: color 0.3s ease; padding: 4px; }
+        .edit-btn:active { color: #cccc00; animation: scalePulse 0.3s ease-in-out; }
+        .save-btn { color: #00cc00; }
+        .save-btn:active { animation: neonPulseGreen 0.3s ease-in-out; }
+        .delete-btn:active { color: #cc0000; animation: neonPulseRed 0.3s ease-in-out; }
+        #total, #grand-total { font-weight: bold; margin-top: 8px; color: #00b7b7; text-shadow: 0 0 2px #00b7b7; text-align: center; width: 100%; transition: color 0.3s; }
+        body.light-mode #total, body.light-mode #grand-total { color: #006666; text-shadow: none; }
+        #adBanner {
+            width: 100%; max-width: 320px; height: 50px; margin: 12px auto; border: 1px solid #00b7b7;
+            border-radius: 6px; background: #2a2a2a; display: flex; justify-content: center; align-items: center;
+            color: #00b7b7; font-size: 0.9em; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); transition: background 0.3s, border 0.3s, box-shadow 0.3s;
+        }
+        body.light-mode #adBanner { background: #e0e0e0; border: 1px solid #006666; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); }
+        @media (max-width: 768px) {
+            .container { max-width: 90%; padding: 12px; }
+            h1 { font-size: 1.8em; }
+            .add-item, .extra-features { flex-direction: column; gap: 6px; }
+            #new-item, #new-qty, #new-price, #new-due, #new-category, #currency { width: 100%; min-width: unset; font-size: 0.85em; padding: 8px; }
+            button { padding: 8px; font-size: 0.85em; min-width: 100%; }
+            .list-group-item { padding: 8px; animation: none; }
+            .list-group-item.added { animation: fadeSlideUp 0.3s ease-in; }
+            .list-group-item.removing { animation: fadeSlideLeft 0.3s ease-in forwards; }
+            .edit-quantity, .edit-price, .edit-due, .edit-category { width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
+            h1 { font-size: 1.5em; }
+            .item-text { font-size: 0.9em; }
+            .item-meta { font-size: 0.75em; }
+            .list-group-item input[type="checkbox"] { width: 16px; height: 16px; }
+            #new-item, #new-qty, #new-price, #new-due, #new-category, #currency { font-size: 0.8em; padding: 6px; }
+            button { padding: 6px; font-size: 0.8em; }
+            #adBanner { max-width: 100%; height: 40px; font-size: 0.8em; }
+        }
+        @media (max-width: 360px) {
+            .container { padding: 8px; }
+            h1 { font-size: 1.3em; }
+            .item-text { font-size: 0.85em; }
+            .item-meta { font-size: 0.7em; }
+            button { padding: 6px; font-size: 0.75em; }
+            .list-group-item { animation: none; }
+        }
+        @media (min-width: 1024px) {
+            .container { max-width: 800px; }
+            h1 { font-size: 2.2em; }
+            .add-item, .extra-features { gap: 12px; }
+            button { padding: 10px 16px; font-size: 1em; }
+            .list-group-item { animation: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Neon Shopping List Pro</h1>
+        <button id="mode-toggle">Switch to Light Mode</button>
+        <input type="text" id="search-input" placeholder="Search items...">
+        <div class="add-item">
+            <select id="currency">
+                <option value="₹" selected>₹ (INR)</option>
+                <option value="$">$ (USD)</option>
+                <option value="€">€ (EUR)</option>
+            </select>
+            <select id="new-category">
+                <option value="groceries" selected>Groceries</option>
+                <option value="electronics">Electronics</option>
+                <option value="clothes">Clothes</option>
+                <option value="household">Household</option>
+                <option value="other">Other</option>
+            </select>
+            <input type="text" id="new-item" placeholder="Item name...">
+            <input type="number" id="new-qty" placeholder="Qty" min="0">
+            <input type="number" id="new-price" placeholder="Price" min="0" step="0.01">
+            <input type="date" id="new-due" placeholder="Due date">
+            <button id="add-btn">Add</button>
+        </div>
+        <div class="tab-content">
+            <div id="groceries" class="tab-pane active"><ul class="list-group"></ul><div id="total-groceries">Total: ₹0</div></div>
+            <div id="electronics" class="tab-pane"><ul class="list-group"></ul><div id="total-electronics">Total: ₹0</div></div>
+            <div id="clothes" class="tab-pane"><ul class="list-group"></ul><div id="total-clothes">Total: ₹0</div></div>
+            <div id="household" class="tab-pane"><ul class="list-group"></ul><div id="total-household">Total: ₹0</div></div>
+            <div id="other" class="tab-pane"><ul class="list-group"></ul><div id="total-other">Total: ₹0</div></div>
+        </div>
+        <div id="grand-total">Grand Total: ₹0</div>
+        <div class="extra-features">
+            <button id="sort-btn">Sort by Name</button>
+            <button id="export-btn">Export to PDF</button>
+            <button id="notify-btn">Enable Notifications</button>
+            <button id="clear-btn">Clear All</button>
+        </div>
+        <div id="adBanner">
+            <!-- Paste your Adsterra ad code here (e.g., <script src="your-adsterra-script.js"></script> or banner code) -->
+            Ad Space (320x50)
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const categories = ['groceries', 'electronics', 'clothes', 'household', 'other'];
+            let items = {};
+            let currency = '₹'; // Default currency set to INR
+            let sortMode = 'name';
+
+            // Haptic feedback function
+            function vibrate(pattern) {
+                if (window.innerWidth <= 768 && navigator.vibrate) {
+                    navigator.vibrate(pattern);
+                }
+            }
+
+            // Function to capitalize first letter and lowercase rest
+            function capitalizeFirstLetter(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+            }
+
+            // Function to get current date and time
+            function getCurrentDateTime() {
+                const now = new Date();
+                const options = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' };
+                const time = now.toLocaleTimeString('en-US', options).replace(' ', '');
+                return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${time} IST`;
+            }
+
+            // Load from localStorage with default addedDate
+            function loadItems() {
+                const saved = localStorage.getItem('shoppingList');
+                if (saved) {
+                    items = JSON.parse(saved);
+                    categories.forEach(cat => {
+                        if (!items[cat]) items[cat] = [];
+                        items[cat] = items[cat].map(item => ({
+                            ...item,
+                            addedDate: item.addedDate || '1970-01-01 00:00 AM IST' // Default for missing dates
+                        }));
+                    });
+                } else {
+                    categories.forEach(cat => items[cat] = []);
+                }
+                renderLists();
+                updateGrandTotal();
+            }
+
+            // Save to localStorage
+            function saveItems() {
+                localStorage.setItem('shoppingList', JSON.stringify(items));
+            }
+
+            // Render all lists
+            function renderLists() {
+                categories.forEach(cat => renderList(cat));
+            }
+
+            // Render list for a category
+            function renderList(cat) {
+                const list = document.querySelector(`#${cat} .list-group`);
+                list.innerHTML = '';
+                items[cat].forEach((item, idx) => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item' + (item.completed ? ' completed' : '');
+                    li.innerHTML = `
+                        <input type="checkbox" ${item.completed ? 'checked' : ''}>
+                        <div class="item-details">
+                            <span class="item-text">${item.name}</span>
+                            <div class="item-meta">Qty: ${item.qty} | Price: ${currency}${item.price.toFixed(2)} | Due: ${item.due || 'None'} | Added: ${item.addedDate}</div>
+                        </div>
+                        <input type="text" class="edit-input" value="${item.name}" style="display:none;">
+                        <input type="number" class="edit-quantity" value="${item.qty}" min="0" style="display:none;">
+                        <input type="number" class="edit-price" value="${item.price}" min="0" step="0.01" style="display:none;">
+                        <input type="date" class="edit-due" value="${item.due || ''}" style="display:none;">
+                        <select class="edit-category" style="display:none;">
+                            ${categories.map(c => `<option value="${c}" ${c === cat ? 'selected' : ''}>${c.charAt(0).toUpperCase() + c.slice(1)}</option>`).join('')}
+                        </select>
+                        <div class="actions">
+                            <button class="edit-btn">✏️</button>
+                            <button class="save-btn" style="display:none;">💾</button>
+                            <button class="delete-btn">🗑️</button>
+                        </div>`;
+                    li.dataset.idx = idx;
+                    li.dataset.cat = cat;
+                    if (window.innerWidth <= 768) li.classList.add('added');
+                    list.appendChild(li);
+                });
+                updateTotal(cat);
+            }
+
+            // Add item
+            document.querySelector('#add-btn').addEventListener('click', () => {
+                vibrate(50); // Haptic feedback for add
+                const name = document.querySelector('#new-item').value.trim();
+                const qty = parseInt(document.querySelector('#new-qty').value) || 1; // Default to 1 if empty or 0
+                const price = parseFloat(document.querySelector('#new-price').value) || 0;
+                const due = document.querySelector('#new-due').value;
+                const category = document.querySelector('#new-category').value;
+                if (!name) {
+                    alert('Please enter an item name.');
+                    document.querySelector('#new-item').focus();
+                    return;
+                }
+                if (price < 0) {
+                    alert('Price cannot be negative.');
+                    document.querySelector('#new-price').value = '';
+                    document.querySelector('#new-price').focus();
+                    return;
+                }
+                items[category].push({ name: capitalizeFirstLetter(name), qty, price, due, completed: false, addedDate: getCurrentDateTime() });
+                renderList(category);
+                saveItems();
+                updateGrandTotal();
+                document.querySelector('#new-item').value = '';
+                document.querySelector('#new-qty').value = '';
+                document.querySelector('#new-price').value = '';
+                document.querySelector('#new-due').value = '';
+                document.querySelector('#new-item').focus();
+                if (due) setReminder(capitalizeFirstLetter(name), due);
+                filterItems();
+            });
+            document.querySelector('#new-item').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    vibrate(50);
+                    document.querySelector('#add-btn').click();
+                }
+            });
+
+            // Delete item
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('delete-btn')) {
+                    vibrate([50, 50, 50]); // Double pulse for delete
+                    const li = e.target.closest('li');
+                    const cat = li.dataset.cat;
+                    const idx = parseInt(li.dataset.idx);
+                    if (window.innerWidth <= 768) {
+                        li.classList.add('removing');
+                        setTimeout(() => {
+                            items[cat].splice(idx, 1);
+                            renderList(cat);
+                            saveItems();
+                            updateGrandTotal();
+                            filterItems();
+                        }, 300);
+                    } else {
+                        items[cat].splice(idx, 1);
+                        renderList(cat);
+                        saveItems();
+                        updateGrandTotal();
+                        filterItems();
+                    }
+                }
+            });
+
+            // Edit item
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('edit-btn')) {
+                    vibrate(30); // Haptic feedback for edit
+                    const li = e.target.closest('li');
+                    const cat = li.dataset.cat;
+                    const idx = parseInt(li.dataset.idx);
+                    li.querySelector('.item-details').style.display = 'none';
+                    const editInputs = li.querySelectorAll('.edit-input, .edit-quantity, .edit-price, .edit-due, .edit-category');
+                    editInputs.forEach(input => {
+                        input.style.display = 'block';
+                        if (window.innerWidth <= 768) input.classList.add('active');
+                    });
+                    li.querySelector('.edit-btn').style.display = 'none';
+                    const saveBtn = li.querySelector('.save-btn');
+                    saveBtn.style.display = 'inline';
+                    if (window.innerWidth <= 768) saveBtn.classList.add('active');
+                    li.querySelector('.edit-input').focus();
+                } else if (e.target.classList.contains('save-btn')) {
+                    vibrate([30, 30, 30]); // Double pulse for save
+                    const li = e.target.closest('li');
+                    const cat = li.dataset.cat;
+                    const idx = parseInt(li.dataset.idx);
+                    const newName = li.querySelector('.edit-input').value.trim();
+                    const newQty = parseInt(li.querySelector('.edit-quantity').value) || 1; // Default to 1 if empty or 0
+                    const newPrice = parseFloat(li.querySelector('.edit-price').value) || 0;
+                    const newDue = li.querySelector('.edit-due').value;
+                    const newCat = li.querySelector('.edit-category').value;
+                    if (!newName) {
+                        alert('Please enter an item name.');
+                        li.querySelector('.edit-input').focus();
+                        return;
+                    }
+                    if (newPrice < 0) {
+                        alert('Price cannot be negative.');
+                        li.querySelector('.edit-price').value = '';
+                        li.querySelector('.edit-price').focus();
+                        return;
+                    }
+                    if (newCat !== cat) {
+                        items[cat].splice(idx, 1);
+                        items[newCat].push({ name: capitalizeFirstLetter(newName), qty: newQty, price: newPrice, due: newDue, completed: items[cat][idx].completed, addedDate: items[cat][idx].addedDate });
+                        renderList(newCat);
+                    } else {
+                        items[cat][idx] = { name: capitalizeFirstLetter(newName), qty: newQty, price: newPrice, due: newDue, completed: items[cat][idx].completed, addedDate: items[cat][idx].addedDate };
+                    }
+                    renderList(cat);
+                    if (newCat !== cat) renderList(newCat);
+                    saveItems();
+                    updateGrandTotal();
+                    if (newDue) setReminder(capitalizeFirstLetter(newName), newDue);
+                    filterItems();
+                }
+            });
+
+            // Checkbox toggle
+            document.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    vibrate(30); // Haptic feedback for checkbox
+                    const li = e.target.closest('li');
+                    const cat = li.dataset.cat;
+                    const idx = parseInt(li.dataset.idx);
+                    items[cat][idx].completed = e.target.checked;
+                    li.classList.toggle('completed', e.target.checked);
+                    saveItems();
+                }
+            });
+
+            // Update total for category
+            function updateTotal(cat) {
+                const total = items[cat].reduce((sum, item) => sum + (item.qty * item.price), 0);
+                document.querySelector(`#total-${cat}`).textContent = `Total: ${currency}${total.toFixed(2)}`;
+            }
+
+            // Update grand total
+            function updateGrandTotal() {
+                let grand = 0;
+                categories.forEach(cat => grand += items[cat].reduce((sum, item) => sum + (item.qty * item.price), 0));
+                document.querySelector('#grand-total').textContent = `Grand Total: ${currency}${grand.toFixed(2)}`;
+            }
+
+            // Search
+            document.querySelector('#search-input').addEventListener('input', filterItems);
+            function filterItems() {
+                const query = document.querySelector('#search-input').value.toLowerCase();
+                categories.forEach(cat => {
+                    document.querySelectorAll(`#${cat} .list-group-item`).forEach(li => {
+                        const text = li.querySelector('.item-text').textContent.toLowerCase();
+                        const meta = li.querySelector('.item-meta').textContent.toLowerCase();
+                        if (window.innerWidth <= 768) {
+                            li.style.animation = 'none';
+                            li.style.opacity = text.includes(query) || meta.includes(query) ? '1' : '0';
+                            li.style.display = text.includes(query) || meta.includes(query) ? 'flex' : 'none';
+                            if (text.includes(query) || meta.includes(query)) {
+                                li.classList.add('added');
+                                setTimeout(() => li.classList.remove('added'), 300);
+                            }
+                        } else {
+                            li.style.display = text.includes(query) || meta.includes(query) ? 'flex' : 'none';
+                        }
+                    });
+                });
+            }
+
+            // Export to PDF
+            document.querySelector('#export-btn').addEventListener('click', () => {
+                vibrate(20); // Haptic feedback for export
+                html2pdf().from(document.querySelector('.container')).set({ filename: 'shopping-list.pdf' }).save();
+            });
+
+            // Sort items
+            document.querySelector('#sort-btn').addEventListener('click', () => {
+                vibrate(20); // Haptic feedback for sort
+                sortMode = sortMode === 'name' ? 'qty' : sortMode === 'qty' ? 'price' : sortMode === 'price' ? 'date' : 'name';
+                document.querySelector('#sort-btn').textContent = `Sort by ${sortMode.charAt(0).toUpperCase() + sortMode.slice(1)}`;
+                categories.forEach(cat => {
+                    items[cat].sort((a, b) => {
+                        if (sortMode === 'name') return a.name.localeCompare(b.name);
+                        if (sortMode === 'qty') return b.qty - a.qty;
+                        if (sortMode === 'price') return b.price - a.price;
+                        if (sortMode === 'date') {
+                            const dateA = new Date((a.addedDate || '1970-01-01 00:00 AM IST').replace(' ', 'T').replace('IST', '+05:30'));
+                            const dateB = new Date((b.addedDate || '1970-01-01 00:00 AM IST').replace(' ', 'T').replace('IST', '+05:30'));
+                            return dateB - dateA; // Sort descending by date
+                        }
+                        return 0;
+                    });
+                    renderList(cat);
+                });
+                saveItems();
+                filterItems();
+            });
+
+            // Currency change
+            document.querySelector('#currency').addEventListener('change', (e) => {
+                vibrate(20); // Haptic feedback for currency change
+                currency = e.target.value;
+                categories.forEach(cat => updateTotal(cat));
+                updateGrandTotal();
+                categories.forEach(cat => renderList(cat)); // Update item-meta prices
+            });
+
+            // Dark/Light mode
+            document.querySelector('#mode-toggle').addEventListener('click', () => {
+                vibrate(20); // Haptic feedback for mode toggle
+                document.body.classList.toggle('light-mode');
+                document.querySelector('#mode-toggle').textContent = document.body.classList.contains('light-mode') ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+            });
+
+            // Notifications
+            document.querySelector('#notify-btn').addEventListener('click', () => {
+                vibrate(20); // Haptic feedback for notifications
+                Notification.requestPermission().then(perm => {
+                    if (perm === 'granted') alert('Notifications enabled!');
+                });
+            });
+
+            // Check unticked items and send notifications
+            function checkUntickedItems() {
+                if (Notification.permission === 'granted') {
+                    const untickedItems = [];
+                    categories.forEach(cat => {
+                        items[cat].forEach(item => {
+                            if (!item.completed) {
+                                untickedItems.push(item.name);
+                            }
+                        });
+                    });
+                    if (untickedItems.length > 0) {
+                        new Notification('Shopping Reminder', {
+                            body: `Don’t forget to buy: ${untickedItems.join(', ')}`
+                        });
+                    }
+                }
+            }
+
+            // Set interval to check unticked items every 5 minutes
+            setInterval(checkUntickedItems, 300000); // 300,000 ms = 5 minutes
+
+            function setReminder(name, due) {
+                const dueDate = new Date(due);
+                const now = new Date();
+                const timeout = dueDate - now;
+                if (timeout > 0) setTimeout(() => new Notification(`Reminder: ${name} is due!`), timeout);
+            }
+
+            // Initialize
+            loadItems();
+            filterItems();
+            document.querySelector('#new-item').focus();
+        });
+    </script>
+</body>
+</html>
