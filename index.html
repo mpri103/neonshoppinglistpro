@@ -50,11 +50,11 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body {
             width: 100%; min-height: 100vh; overflow-x: hidden;
-            font-family: 'Exo 2', sans-serif; background: linear-gradient(145deg, #121212, #000);
-            color: #fff; display: flex; justify-content: center; align-items: center; flex-direction: column;
+            font-family: 'Exo 2', sans-serif; background: linear-gradient(145deg, #f0f0f0, #fff);
+            color: #000; display: flex; justify-content: center; align-items: flex-start; flex-direction: column;
             transition: background 0.3s, color 0.3s;
         }
-        body.light-mode { background: linear-gradient(145deg, #f0f0f0, #fff); color: #000; }
+        body.dark-mode { background: linear-gradient(145deg, #121212, #000); color: #fff; }
         @keyframes neonPulse {
             0%, 100% { box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); }
             50% { box-shadow: 0 0 8px rgba(0, 183, 183, 0.5); }
@@ -93,190 +93,222 @@
             100% { transform: scale(1); }
         }
         .container {
-            background: linear-gradient(145deg, #1e1e1e, #2a2a2a); border-radius: 10px;
-            padding: 16px; width: 100%; max-width: 700px; margin: 16px auto;
-            box-shadow: 0 0 6px rgba(0, 183, 183, 0.3); animation: neonPulse 4s ease-in-out infinite;
+            background: linear-gradient(145deg, #fff, #e0e0e0); border-radius: 10px;
+            padding: 10px; width: 100%; max-width: 350px; margin: 10px auto;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.15); animation: neonPulse 4s ease-in-out infinite;
             transition: transform 0.3s ease, background 0.3s, box-shadow 0.3s;
-            display: flex; flex-direction: column; align-items: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        body.light-mode .container {
-            background: linear-gradient(145deg, #fff, #e0e0e0); box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+        body.dark-mode .container {
+            background: linear-gradient(145deg, #1e1e1e, #2a2a2a); box-shadow: 0 0 6px rgba(0, 183, 183, 0.3);
         }
-        .container:hover { transform: scale(1.01); box-shadow: 0 0 10px rgba(0, 183, 183, 0.5); }
-        body.light-mode .container:hover { box-shadow: 0 0 10px rgba(0, 0, 0, 0.25); }
+        .container:hover { transform: scale(1.01); box-shadow: 0 0 10px rgba(0, 0, 0, 0.25); }
+        body.dark-mode .container:hover { box-shadow: 0 0 10px rgba(0, 183, 183, 0.5); }
         h1 {
-            text-align: center; font-weight: 700; color: #00b7b7; text-shadow: 0 0 4px #00b7b7;
-            margin-bottom: 16px; font-size: 2em; letter-spacing: 1px; animation: neonPulse 4s ease-in-out infinite;
+            text-align: center; font-weight: 700; color: #006666; text-shadow: 0 0 2px #006666;
+            margin-bottom: 12px; font-size: 1.3em; letter-spacing: 1px;
         }
-        body.light-mode h1 { color: #006666; text-shadow: none; }
-        .add-item, .extra-features {
-            display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; justify-content: center;
-            width: 100%; align-items: center;
+        body.dark-mode h1 { color: #00b7b7; text-shadow: 0 0 2px #00b7b7; }
+        .add-item {
+            display: flex; flex-direction: column; gap: 8px; margin: 8px 0; justify-content: center; width: 100%; align-items: center;
+            position: relative;
         }
-        #new-item, #new-qty, #new-price, #new-due, #new-category, #search-input, #currency {
-            padding: 8px; border: 1px solid #00b7b7; border-radius: 6px; background: #2a2a2a; color: #fff;
-            font-size: 0.9em; font-family: 'Exo 2', sans-serif; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3);
+        #new-item {
+            padding: 8px; border: 1px solid #006666; border-radius: 6px; background: #fff; color: #000;
+            font-size: 0.9em; font-family: 'Exo 2', sans-serif; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
             transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s, border 0.3s;
-            flex: 1; min-width: 100px; will-change: transform, box-shadow;
+            width: 100%; will-change: transform, box-shadow;
         }
-        body.light-mode #new-item, body.light-mode #new-qty, body.light-mode #new-price, body.light-mode #new-due,
-        body.light-mode #new-category, body.light-mode #search-input, body.light-mode #currency {
-            background: #fff; border: 1px solid #006666; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); color: #000;
+        body.dark-mode #new-item {
+            background: #2a2a2a; border: 1px solid #00b7b7; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); color: #fff;
         }
-        #new-item { flex: 2; min-width: 150px; }
-        #new-qty, #new-price, #currency, #new-category { min-width: 80px; }
-        #new-due { min-width: 120px; }
-        #search-input { width: 100%; margin: 8px 0; }
-        #new-item::placeholder, #new-qty::placeholder, #new-price::placeholder, #new-due::placeholder,
-        #new-category::placeholder, #search-input::placeholder, #currency::placeholder {
-            color: #ccc;
-        }
-        body.light-mode #new-item::placeholder, body.light-mode #new-qty::placeholder, body.light-mode #new-price::placeholder,
-        body.light-mode #new-due::placeholder, body.light-mode #new-category::placeholder, body.light-mode #search-input::placeholder,
-        body.light-mode #currency::placeholder { color: #333; }
-        #new-item:focus, #new-qty:focus, #new-price:focus, #new-due:focus, #new-category:focus, #search-input:focus, #currency:focus {
-            outline: none; box-shadow: 0 0 8px rgba(0, 183, 183, 0.5); animation: neonPulse 4s ease-in-out infinite;
+        #new-item::placeholder { color: #333; }
+        body.dark-mode #new-item::placeholder { color: #ccc; }
+        #new-item:focus {
+            outline: none; box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); animation: neonPulse 4s ease-in-out infinite;
             transform: scale(1.02);
         }
-        body.light-mode #new-item:focus, body.light-mode #new-qty:focus, body.light-mode #new-price:focus,
-        body.light-mode #new-due:focus, body.light-mode #new-category:focus, body.light-mode #search-input:focus,
-        body.light-mode #currency:focus { box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); }
-        button {
-            padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em;
-            font-family: 'Exo 2', sans-serif; transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s, color 0.3s;
-            min-width: 80px; text-align: center; line-height: 1.5; will-change: transform, box-shadow;
+        body.dark-mode #new-item:focus { box-shadow: 0 0 8px rgba(0, 183, 183, 0.5); }
+        .settings-icon {
+            padding: 8px; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1em;
+            background: #006666; color: #fff; transition: transform 0.2s ease, box-shadow 0.3s ease;
+            width: 100%;
         }
-        #add-btn { background: #00cc00; color: #000; animation: neonPulseGreen 4s ease-in-out infinite; }
-        body.light-mode #add-btn { background: #009900; color: #fff; }
-        #clear-btn { background: #cc0000; color: #fff; animation: neonPulseRed 4s ease-in-out infinite; }
-        body.light-mode #clear-btn { background: #990000; color: #fff; }
-        #export-btn, #sort-btn, #notify-btn, #mode-toggle { background: #00b7b7; color: #000; }
-        body.light-mode #export-btn, body.light-mode #sort-btn, body.light-mode #notify-btn, body.light-mode #mode-toggle {
-            background: #006666; color: #fff;
+        body.dark-mode .settings-icon { background: #00b7b7; color: #000; }
+        .settings-icon:active { transform: scale(1.05); box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); animation: scalePulse 0.3s ease-in-out; }
+        body.dark-mode .settings-icon:active { box-shadow: 0 0 8px rgba(0, 183, 183, 0.5); }
+        .dropdown {
+            display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border-radius: 6px;
+            padding: 8px; margin-top: 4px; box-shadow: 0 0 6px rgba(0, 0, 0, 0.15); z-index: 10;
+            flex-direction: column; gap: 6px; width: 100%; max-width: 300px; margin-left: auto; margin-right: auto;
+        }
+        body.dark-mode .dropdown { background: #2a2a2a; box-shadow: 0 0 6px rgba(0, 183, 183, 0.3); }
+        .dropdown.active { display: flex; animation: fadeSlideUp 0.3s ease-in; }
+        .dropdown input, .dropdown select {
+            padding: 6px; border: 1px solid #006666; border-radius: 6px; background: #fff; color: #000;
+            font-size: 0.85em; font-family: 'Exo 2', sans-serif; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+            transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s, border 0.3s;
+            width: 100%; min-width: unset;
+        }
+        body.dark-mode .dropdown input, body.dark-mode .dropdown select {
+            background: #1e1e1e; border: 1px solid #00b7b7; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); color: #fff;
+        }
+        .dropdown input:focus, .dropdown select:focus {
+            outline: none; box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); animation: neonPulse 4s ease-in-out infinite;
+            transform: scale(1.02);
+        }
+        body.dark-mode .dropdown input:focus, body.dark-mode .dropdown select:focus {
+            box-shadow: 0 0 8px rgba(0, 183, 183, 0.5);
+        }
+        .extra-features {
+            display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; justify-content: center;
+            width: 100%; align-items: center;
+        }
+        button {
+            padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8em;
+            font-family: 'Exo 2', sans-serif; transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s, color 0.3s;
+            min-width: 70px; text-align: center; line-height: 1.5; will-change: transform, box-shadow;
+        }
+        #add-btn {
+            background: #009900; color: #fff; animation: neonPulseGreen 4s ease-in-out infinite;
+            margin: 0 auto; display: block; width: fit-content;
+        }
+        body.dark-mode #add-btn { background: #00cc00; color: #000; }
+        #clear-btn { background: #990000; color: #fff; animation: neonPulseRed 4s ease-in-out infinite; }
+        body.dark-mode #clear-btn { background: #cc0000; color: #fff; }
+        #export-btn, #sort-btn, #notify-btn, #mode-toggle { background: #006666; color: #fff; }
+        body.dark-mode #export-btn, body.dark-mode #sort-btn, body.dark-mode #notify-btn, body.dark-mode #mode-toggle {
+            background: #00b7b7; color: #000;
         }
         button:active {
-            transform: scale(1.05); box-shadow: 0 0 8px rgba(0, 183, 183, 0.5);
+            transform: scale(1.05); box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
             animation: scalePulse 0.3s ease-in-out;
         }
-        body.light-mode button:active { box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); }
-        .tab-content { width: 100%; margin-top: 16px; }
+        body.dark-mode button:active { box-shadow: 0 0 8px rgba(0, 183, 183, 0.5); }
+        .tab-content { width: 100%; margin-top: 8px; }
         .tab-pane { display: none; }
         .tab-pane.active { display: block; animation: fadeIn 0.3s ease-in; }
         .list-group { list-style: none; padding: 0; width: 100%; }
         .list-group-item {
-            display: flex; align-items: center; background: #2a2a2a; border-radius: 6px; padding: 10px;
-            margin-bottom: 8px; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); transition: all 0.3s;
+            display: flex; align-items: center; background: #fff; border-radius: 6px; padding: 8px;
+            margin-bottom: 6px; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); color: #000;
         }
-        body.light-mode .list-group-item { background: #fff; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); }
-        .list-group-item:hover { box-shadow: 0 0 8px rgba(0, 183, 183, 0.5); transform: translateY(-2px); }
-        body.light-mode .list-group-item:hover { box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); }
+        body.dark-mode .list-group-item { background: #2a2a2a; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); color: #fff; }
+        .list-group-item:hover { box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); transform: translateY(-2px); }
+        body.dark-mode .list-group-item:hover { box-shadow: 0 0 8px rgba(0, 183, 183, 0.5); }
         .list-group-item.added { animation: fadeSlideUp 0.3s ease-in; }
         .list-group-item.removing { animation: fadeSlideLeft 0.3s ease-in forwards; }
-        .list-group-item.completed { text-decoration: line-through; color: #888; background: #1a1a1a; box-shadow: 0 0 4px rgba(0, 204, 0, 0.3); }
-        body.light-mode .list-group-item.completed { background: #f0f0f0; }
+        .list-group-item.completed { text-decoration: line-through; color: #888; background: #f0f0f0; box-shadow: 0 0 4px rgba(0, 204, 0, 0.3); }
+        body.dark-mode .list-group-item.completed { background: #1a1a1a; }
         .list-group-item input[type="checkbox"] {
-            margin-right: 8px; accent-color: #00b7b7; width: 18px; height: 18px; min-width: 18px;
+            margin-right: 6px; accent-color: #006666; width: 16px; height: 16px; min-width: 16px;
             transition: transform 0.2s ease;
         }
         .list-group-item input[type="checkbox"]:checked { animation: checkboxPulse 0.3s ease-in; }
-        body.light-mode .list-group-item input[type="checkbox"] { accent-color: #006666; }
+        body.dark-mode .list-group-item input[type="checkbox"] { accent-color: #00b7b7; }
         .item-details { flex: 1; display: flex; flex-direction: column; }
-        .item-text { font-size: 0.95em; font-weight: 400; }
-        .item-meta { font-size: 0.8em; color: #00b7b7; text-shadow: 0 0 2px rgba(0, 183, 183, 0.3); }
-        body.light-mode .item-meta { color: #006666; text-shadow: none; }
+        .item-text { font-size: 0.9em; font-weight: 400; }
+        .item-meta { font-size: 0.75em; color: #006666; }
+        body.dark-mode .item-meta { color: #00b7b7; text-shadow: 0 0 2px rgba(0, 183, 183, 0.3); }
         .edit-input, .edit-quantity, .edit-price, .edit-due, .edit-category {
-            padding: 8px; border: 1px solid #00b7b7; border-radius: 6px; background: #1e1e1e; color: #fff;
-            box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); margin-bottom: 4px; font-family: 'Exo 2', sans-serif;
+            padding: 6px; border: 1px solid #006666; border-radius: 6px; background: #fff; color: #000;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); margin-bottom: 4px; font-family: 'Exo 2', sans-serif;
             transition: all 0.3s ease, background 0.3s, border 0.3s; transform-origin: top;
         }
         .edit-input.active, .edit-quantity.active, .edit-price.active, .edit-due.active, .edit-category.active {
             animation: fadeSlideUp 0.3s ease-in;
         }
-        body.light-mode .edit-input, body.light-mode .edit-quantity, body.light-mode .edit-price,
-        body.light-mode #new-due, body.light-mode .edit-category {
-            background: #fff; border: 1px solid #006666; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); color: #000;
+        body.dark-mode .edit-input, body.dark-mode .edit-quantity, body.dark-mode .edit-price,
+        body.dark-mode #new-due, body.dark-mode .edit-category {
+            background: #1e1e1e; border: 1px solid #00b7b7; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); color: #fff;
         }
-        .edit-input { width: 100%; font-size: 0.9em; }
-        .edit-quantity, .edit-price { width: 80px; font-size: 0.9em; }
-        .edit-due, .edit-category { width: 100px; font-size: 0.9em; }
+        .edit-input { width: 100%; font-size: 0.85em; }
+        .edit-quantity, .edit-price { width: 70px; font-size: 0.85em; }
+        .edit-due, .edit-category { width: 90px; font-size: 0.85em; }
         .edit-input:focus, .edit-quantity:focus, .edit-price:focus, .edit-due:focus, .edit-category:focus {
             animation: neonPulse 4s ease-in-out infinite;
         }
         .save-btn.active { animation: scalePulse 0.5s ease-in-out infinite; }
-        .actions { display: flex; gap: 8px; align-items: center; }
-        .edit-btn, .save-btn, .delete-btn { background: none; border: none; cursor: pointer; font-size: 1.1em; transition: color 0.3s ease; padding: 4px; }
+        .actions { display: flex; gap: 6px; align-items: center; }
+        .edit-btn, .save-btn, .delete-btn { background: none; border: none; cursor: pointer; font-size: 1em; transition: color 0.3s ease; padding: 4px; }
         .edit-btn:active { color: #cccc00; animation: scalePulse 0.3s ease-in-out; }
-        .save-btn { color: #00cc00; }
+        .save-btn { color: #009900; }
         .save-btn:active { animation: neonPulseGreen 0.3s ease-in-out; }
-        .delete-btn:active { color: #cc0000; animation: neonPulseRed 0.3s ease-in-out; }
-        #total, #grand-total { font-weight: bold; margin-top: 8px; color: #00b7b7; text-shadow: 0 0 2px #00b7b7; text-align: center; width: 100%; transition: color 0.3s; }
-        body.light-mode #total, body.light-mode #grand-total { color: #006666; text-shadow: none; }
+        .delete-btn:active { color: #990000; animation: neonPulseRed 0.3s ease-in-out; }
+        #total, #grand-total { font-weight: bold; margin-top: 6px; color: #006666; text-shadow: none; text-align: center; width: 100%; transition: color 0.3s; }
+        body.dark-mode #total, body.dark-mode #grand-total { color: #00b7b7; text-shadow: 0 0 2px #00b7b7; }
         #adBanner {
-            width: 100%; max-width: 320px; height: 50px; margin: 12px auto; border: 1px solid #00b7b7;
-            border-radius: 6px; background: #2a2a2a; display: flex; justify-content: center; align-items: center;
-            color: #00b7b7; font-size: 0.9em; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); transition: background 0.3s, border 0.3s, box-shadow 0.3s;
+            width: 100%; max-width: 300px; height: 40px; margin: 8px auto; border: 1px solid #006666;
+            border-radius: 6px; background: #e0e0e0; display: flex; justify-content: center; align-items: center;
+            color: #006666; font-size: 0.8em; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); transition: background 0.3s, border 0.3s, box-shadow 0.3s;
         }
-        body.light-mode #adBanner { background: #e0e0e0; border: 1px solid #006666; box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); }
-        @media (max-width: 768px) {
-            .container { max-width: 90%; padding: 12px; }
-            h1 { font-size: 1.8em; }
-            .add-item, .extra-features { flex-direction: column; gap: 6px; }
-            #new-item, #new-qty, #new-price, #new-due, #new-category, #currency { width: 100%; min-width: unset; font-size: 0.85em; padding: 8px; }
-            button { padding: 8px; font-size: 0.85em; min-width: 100%; }
-            .list-group-item { padding: 8px; animation: none; }
-            .list-group-item.added { animation: fadeSlideUp 0.3s ease-in; }
-            .list-group-item.removing { animation: fadeSlideLeft 0.3s ease-in forwards; }
-            .edit-quantity, .edit-price, .edit-due, .edit-category { width: 100%; }
-        }
-        @media (max-width: 480px) {
-            .container { padding: 10px; }
+        body.dark-mode #adBanner { background: #2a2a2a; border: 1px solid #00b7b7; box-shadow: 0 0 4px rgba(0, 183, 183, 0.3); }
+        @media (min-width: 361px) {
+            .container { max-width: 400px; padding: 12px; }
             h1 { font-size: 1.5em; }
-            .item-text { font-size: 0.9em; }
-            .item-meta { font-size: 0.75em; }
-            .list-group-item input[type="checkbox"] { width: 16px; height: 16px; }
-            #new-item, #new-qty, #new-price, #new-due, #new-category, #currency { font-size: 0.8em; padding: 6px; }
-            button { padding: 6px; font-size: 0.8em; }
-            #adBanner { max-width: 100%; height: 40px; font-size: 0.8em; }
+            .add-item { flex-direction: row; gap: 10px; }
+            #new-item { width: 70%; }
+            .settings-icon { width: auto; margin-left: auto; }
+            button { padding: 8px 12px; font-size: 0.9em; min-width: 80px; }
+            .list-group-item { padding: 10px; margin-bottom: 8px; }
+            .list-group-item input[type="checkbox"] { width: 18px; height: 18px; }
+            .item-text { font-size: 0.95em; }
+            .item-meta { font-size: 0.8em; }
+            .edit-quantity, .edit-price { width: 80px; }
+            .edit-due, .edit-category { width: 100px; }
+            #adBanner { max-width: 320px; height: 50px; font-size: 0.9em; }
         }
-        @media (max-width: 360px) {
-            .container { padding: 8px; }
-            h1 { font-size: 1.3em; }
-            .item-text { font-size: 0.85em; }
-            .item-meta { font-size: 0.7em; }
-            button { padding: 6px; font-size: 0.75em; }
-            .list-group-item { animation: none; }
+        @media (min-width: 481px) {
+            .container { max-width: 500px; padding: 14px; }
+            h1 { font-size: 1.8em; }
+            .add-item { gap: 12px; }
+            button { padding: 8px 12px; font-size: 0.9em; }
+            .list-group-item { padding: 10px; }
+            .item-text { font-size: 1em; }
+            .item-meta { font-size: 0.85em; }
         }
-        @media (min-width: 1024px) {
+        @media (min-width: 769px) {
+            .container { max-width: 700px; padding: 16px; }
+            h1 { font-size: 2em; }
+            .add-item { gap: 12px; }
+            button { padding: 8px 12px; font-size: 0.9em; }
+            .list-group-item { padding: 10px; }
+            .item-text { font-size: 1em; }
+            .item-meta { font-size: 0.8em; }
+        }
+        @media (min-width: 1025px) {
             .container { max-width: 800px; }
             h1 { font-size: 2.2em; }
-            .add-item, .extra-features { gap: 12px; }
+            .add-item { gap: 16px; }
             button { padding: 10px 16px; font-size: 1em; }
-            .list-group-item { animation: none; }
+            .list-group-item { padding: 12px; }
         }
     </style>
 </head>
-<body>
+<body class="light-mode">
     <div class="container">
         <h1>Neon Shopping List Pro</h1>
-        <button id="mode-toggle">Switch to Light Mode</button>
-        <input type="text" id="search-input" placeholder="Search items...">
+        <button id="mode-toggle">Switch to Dark Mode</button>
         <div class="add-item">
-            <select id="currency">
-                <option value="₹" selected>₹ (INR)</option>
-                <option value="$">$ (USD)</option>
-                <option value="€">€ (EUR)</option>
-            </select>
-            <select id="new-category">
-                <option value="groceries" selected>Groceries</option>
-                <option value="electronics">Electronics</option>
-                <option value="clothes">Clothes</option>
-                <option value="household">Household</option>
-                <option value="other">Other</option>
-            </select>
             <input type="text" id="new-item" placeholder="Item name...">
-            <input type="number" id="new-qty" placeholder="Qty" min="0">
-            <input type="number" id="new-price" placeholder="Price" min="0" step="0.01">
-            <input type="date" id="new-due" placeholder="Due date">
+            <button class="settings-icon" id="settings-toggle">⚙️</button>
+            <div class="dropdown" id="settings-dropdown">
+                <select id="currency">
+                    <option value="₹" selected>₹ (INR)</option>
+                    <option value="$">$ (USD)</option>
+                    <option value="€">€ (EUR)</option>
+                </select>
+                <select id="new-category">
+                    <option value="groceries" selected>Groceries</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="clothes">Clothes</option>
+                    <option value="household">Household</option>
+                    <option value="other">Other</option>
+                </select>
+                <input type="number" id="new-qty" placeholder="Qty" min="0">
+                <input type="number" id="new-price" placeholder="Price" min="0" step="0.01">
+                <input type="date" id="new-due" placeholder="Due date">
+            </div>
             <button id="add-btn">Add</button>
         </div>
         <div class="tab-content">
@@ -307,6 +339,7 @@
             let items = {};
             let currency = '₹'; // Default currency set to INR
             let sortMode = 'name';
+            let dropdownOpen = false;
 
             // Haptic feedback function
             function vibrate(pattern) {
@@ -390,6 +423,28 @@
                 updateTotal(cat);
             }
 
+            // Toggle settings dropdown
+            document.querySelector('#settings-toggle').addEventListener('click', () => {
+                vibrate(20); // Haptic feedback for toggle
+                const dropdown = document.querySelector('#settings-dropdown');
+                dropdownOpen = !dropdownOpen;
+                dropdown.classList.toggle('active', dropdownOpen);
+                if (dropdownOpen) {
+                    document.querySelector('#new-qty').value = '';
+                    document.querySelector('#new-price').value = '';
+                    document.querySelector('#new-due').value = '';
+                }
+            });
+
+            // Close dropdown on click outside
+            document.addEventListener('click', (e) => {
+                const dropdown = document.querySelector('#settings-dropdown');
+                if (!e.target.closest('.add-item') && dropdownOpen) {
+                    dropdown.classList.remove('active');
+                    dropdownOpen = false;
+                }
+            });
+
             // Add item
             document.querySelector('#add-btn').addEventListener('click', () => {
                 vibrate(50); // Haptic feedback for add
@@ -419,10 +474,11 @@
                 document.querySelector('#new-due').value = '';
                 document.querySelector('#new-item').focus();
                 if (due) setReminder(capitalizeFirstLetter(name), due);
-                filterItems();
+                document.querySelector('#settings-dropdown').classList.remove('active');
+                dropdownOpen = false;
             });
             document.querySelector('#new-item').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && !dropdownOpen) {
                     vibrate(50);
                     document.querySelector('#add-btn').click();
                 }
@@ -442,14 +498,12 @@
                             renderList(cat);
                             saveItems();
                             updateGrandTotal();
-                            filterItems();
                         }, 300);
                     } else {
                         items[cat].splice(idx, 1);
                         renderList(cat);
                         saveItems();
                         updateGrandTotal();
-                        filterItems();
                     }
                 }
             });
@@ -505,7 +559,6 @@
                     saveItems();
                     updateGrandTotal();
                     if (newDue) setReminder(capitalizeFirstLetter(newName), newDue);
-                    filterItems();
                 }
             });
 
@@ -519,6 +572,7 @@
                     items[cat][idx].completed = e.target.checked;
                     li.classList.toggle('completed', e.target.checked);
                     saveItems();
+                    updateGrandTotal();
                 }
             });
 
@@ -535,33 +589,37 @@
                 document.querySelector('#grand-total').textContent = `Grand Total: ${currency}${grand.toFixed(2)}`;
             }
 
-            // Search
-            document.querySelector('#search-input').addEventListener('input', filterItems);
-            function filterItems() {
-                const query = document.querySelector('#search-input').value.toLowerCase();
-                categories.forEach(cat => {
-                    document.querySelectorAll(`#${cat} .list-group-item`).forEach(li => {
-                        const text = li.querySelector('.item-text').textContent.toLowerCase();
-                        const meta = li.querySelector('.item-meta').textContent.toLowerCase();
-                        if (window.innerWidth <= 768) {
-                            li.style.animation = 'none';
-                            li.style.opacity = text.includes(query) || meta.includes(query) ? '1' : '0';
-                            li.style.display = text.includes(query) || meta.includes(query) ? 'flex' : 'none';
-                            if (text.includes(query) || meta.includes(query)) {
-                                li.classList.add('added');
-                                setTimeout(() => li.classList.remove('added'), 300);
-                            }
-                        } else {
-                            li.style.display = text.includes(query) || meta.includes(query) ? 'flex' : 'none';
-                        }
-                    });
-                });
-            }
-
-            // Export to PDF
+            // Export to PDF with only uncompleted items
             document.querySelector('#export-btn').addEventListener('click', () => {
                 vibrate(20); // Haptic feedback for export
-                html2pdf().from(document.querySelector('.container')).set({ filename: 'shopping-list.pdf' }).save();
+                const exportItems = {};
+                categories.forEach(cat => {
+                    exportItems[cat] = items[cat].filter(item => !item.completed);
+                });
+                const tempContainer = document.createElement('div');
+                tempContainer.className = 'container';
+                tempContainer.innerHTML = `
+                    <h1>Shopping List Export</h1>
+                    <div class="tab-content">
+                        ${categories.map(cat => `
+                            <div id="${cat}-export" class="tab-pane active">
+                                <ul class="list-group">
+                                    ${exportItems[cat].map(item => `
+                                        <li class="list-group-item" style="background: #fff; color: #000; box-shadow: none;">
+                                            <div class="item-details">
+                                                <span class="item-text">${item.name}</span>
+                                                <div class="item-meta">Qty: ${item.qty} | Price: ${currency}${item.price.toFixed(2)} | Due: ${item.due || 'None'} | Added: ${item.addedDate}</div>
+                                            </div>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                                <div id="total-${cat}">Total: ${currency}${exportItems[cat].reduce((sum, item) => sum + (item.qty * item.price), 0).toFixed(2)}</div>
+                            </div>
+                        `).join('')}
+                        <div id="grand-total">Grand Total: ${currency}${categories.reduce((sum, cat) => sum + exportItems[cat].reduce((s, item) => s + (item.qty * item.price), 0), 0).toFixed(2)}</div>
+                    </div>
+                `;
+                html2pdf().from(tempContainer).set({ filename: 'shopping-list.pdf' }).save();
             });
 
             // Sort items
@@ -584,7 +642,6 @@
                     renderList(cat);
                 });
                 saveItems();
-                filterItems();
             });
 
             // Currency change
@@ -599,8 +656,8 @@
             // Dark/Light mode
             document.querySelector('#mode-toggle').addEventListener('click', () => {
                 vibrate(20); // Haptic feedback for mode toggle
-                document.body.classList.toggle('light-mode');
-                document.querySelector('#mode-toggle').textContent = document.body.classList.contains('light-mode') ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+                document.body.classList.toggle('dark-mode');
+                document.querySelector('#mode-toggle').textContent = document.body.classList.contains('dark-mode') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
             });
 
             // Notifications
@@ -642,7 +699,6 @@
 
             // Initialize
             loadItems();
-            filterItems();
             document.querySelector('#new-item').focus();
         });
     </script>
